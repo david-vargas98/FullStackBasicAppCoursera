@@ -24,7 +24,7 @@ app.UseCors();
 
 app.UseHttpsRedirection();
 
-app.MapGet("/api/products", () =>
+app.MapGet("/api/productlist", () =>
 {
     return new[]
     {
