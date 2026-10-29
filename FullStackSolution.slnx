@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="ClientAppdotnet/ClientAppdotnet.csproj" />
+  <Project Path="ServerAppdotnet/ServerAppdotnet.csproj" />
+</Solution>
