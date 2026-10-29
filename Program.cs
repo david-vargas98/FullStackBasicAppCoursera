@@ -1,3 +1,5 @@
+using ServerAppdotnet.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -26,11 +28,21 @@ app.UseHttpsRedirection();
 
 app.MapGet("/api/productlist", () =>
 {
-    return new[]
+    var products = new List<Product>
     {
-        new { Id = 1, Name = "Laptop", Price = 1200.50, Stock = 25 },
-        new { Id = 2, Name = "Headphones", Price = 50.00, Stock = 100 }
+        new(
+            Id: 1, Name: "Laptop", Price: 1200.50m, Stock: 25, Category: new Category( Id: 101, Name: "Electronics")
+        ),
+        new(
+            Id: 2, Name: "Headphones", Price: 50.00m, Stock: 100, Category: new Category( Id: 102, Name: "Accessories")
+        )
     };
+
+    return TypedResults.Ok(new
+    {
+        data = products,
+        count = products.Count
+    });
 });
 
 app.Run();
