@@ -1,0 +1,66 @@
+@page "/fetchproducts"
+@using System.Net.Http.Json
+@using System.Text.Json
+@using ClientAppdotnet.Models
+
+@inject HttpClient _httpClient
+<h3>Product List</h3>
+
+<ul>
+    @if (!string.IsNullOrWhiteSpace(errorMessage))
+    {
+        <p style="color: red;">@errorMessage</p>
+    }
+    else if (products != null)
+    {
+        foreach(Product product in products)
+        {
+            <li>@product.Name - $@product.Price</li>
+        }
+    }
+    else
+    {
+        <li>Loading...</li>
+    }
+</ul>
+
+@code {
+    private Product[]? products;
+    private string errorMessage = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _httpClient.BaseAddress = new Uri("http://localhost:5213");
+
+        try
+        {
+            var response = await _httpClient.GetAsync("/api/productlist");
+
+            response.EnsureSuccessStatusCode();
+
+            var json = await response.Content.ReadAsStringAsync();
+            
+            products = JsonSerializer.Deserialize<Product[]>(json);
+        }
+        catch (TaskCanceledException)
+        {
+            errorMessage = "The request timed out.";
+        }
+        catch (HttpRequestException ex)
+        {
+            errorMessage = $"API request failed: {ex.Message}";
+        }
+        catch (NotSupportedException)
+        {
+            errorMessage = "The response content type is not supported.";
+        }
+        catch (System.Text.Json.JsonException)
+        {
+            errorMessage = "Invalid JSON returned by the API.";
+        }
+        catch(Exception ex)
+        {
+            Console.WriteLine($"An error has occured while fetching the products: {ex.Message}");
+        }
+    }
+}
